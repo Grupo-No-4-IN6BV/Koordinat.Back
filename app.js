@@ -4,6 +4,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var businessRoutes = require('./routes/business.routes');
+var userRoutes = require('./routes/user.model')
 
 
 var app = express();
@@ -15,5 +16,6 @@ app.use(cors())
 
 //app.use('/api', userRoutes);
 app.use('/api', businessRoutes);
+app.use('/api', userRoutes);
 
 module.exports = app;
