@@ -3,6 +3,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+var businessRoutes = require('./routes/business.routes');
 
 
 var app = express();
@@ -13,5 +14,6 @@ app.use(bodyParser.json())
 app.use(cors())
 
 //app.use('/api', userRoutes);
+app.use('/api', businessRoutes);
 
 module.exports = app;
