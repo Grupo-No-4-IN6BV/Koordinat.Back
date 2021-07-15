@@ -158,9 +158,50 @@ function removeUser(req, res){
     }
 }
 
+function registerUser(req, res){
+    var user = new User();
+    var params = req.body;
+
+    if(params.name && params.username && params.password && params.email){
+        User.findOne({username: params.username}, (err, userFind)=>{
+            if(err){
+                return res.status(404).send({message: 'Ocurrio un error en la busqueda'})
+            }else if(userFind){
+                return res.send({message: "Este nombre de usuario ya no esta disponible"})
+            }else{
+                bcrypt.hash(params.password, null, null, (err, passwordHash)=>{
+                    if(err){
+                        return res.status(404).send({message: "Hubo un error con la contraseña", err})
+                    }else if(passwordHash){
+                        user.password = passwordHash;
+                        user.name = params.name;
+                        user.username = params.username;
+                        user.email = params.email;
+                        user.role = 'ROLE_USER';
+                        user.save((err, saveUser)=>{
+                            if(err){
+                                return res.status(404).send({message: "Error general"})
+                            }else if(saveUser){
+                                return res.send({message: "Usuario creado de manera correcta: ", saveUser})
+                            }else{
+                                return res.status(403).send({message: "Error al registrarse"})
+                            }
+                        })
+                    }else{
+                        return res.status(401).send({message: "Existió un error"})
+                    }
+                })
+            }
+        })  
+    }else {
+        return res.status(404).send({message: "Ingrese los datos minimos: Nombre, usuario, correo y contraseña"})
+    }
+}
+
 module.exports ={
     saveUser,
     getUsers,
     updateUser,
-    removeUser
+    removeUser,
+    registerUser
 }

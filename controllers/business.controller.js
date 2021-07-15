@@ -142,11 +142,45 @@ function removeBusiness(req, res){
    
 }
 
+function registerBusiness (req, res){
+    var business = new Business();
+    var params = req.body;
+
+    if(params.name && params.email && params.address && params.phone){
+        Business.findOne({name: params.name}, (err, businessFind)=>{
+            if(err){
+                return res.status(404).send({message: 'Ocurrio un error en la busqueda'})
+            }else if(businessFind){
+                return res.send({message: "Este nombre ya esta registrado"})
+            }else{
+                business.name = params.name;
+                business.email = params.email;
+                business.description = params.description;
+                business.address = params.address;
+                business.phone = params.phone;
+                business.save((err, businessSave)=>{
+                    if(err){
+                        return res.status(404).send({message: "Error general"})
+                    }else if(businessSave){
+                        return res.send({message: "Empresa registrada correctamente: ", businessSave})
+                    }else{
+                        return res.status(403).send({message: "Error al registrarse"})
+                    }
+                })
+            }
+        })
+    }else{
+        return res.status(404).send({message: "Ingrese los datos minimos: Nombre, correo, dirección y número"})
+    }
+}
+
+
 module.exports = {
     saveBusiness,
     getBusiness,
     getInterprises,
     searchBusiness,
     updateBusiness,
-    removeBusiness    
+    removeBusiness,
+    registerBusiness 
 }
