@@ -4,7 +4,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var businessRoutes = require('./routes/business.routes');
-var userRoutes = require('./routes/user.model');
+var userRoutes = require('./routes/user.routes');
 var categoryeRoutes = require('./routes/category.route');
 
 var app = express();
