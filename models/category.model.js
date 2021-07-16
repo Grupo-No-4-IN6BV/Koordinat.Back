@@ -4,10 +4,11 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema;
 
 
-var userSchema = Schema ({
+var categorySchema = Schema ({
     name: String,
-    conunt: Number,
+    description: String, 
+    count: Number,
     image: String,
 })
 
-module.exports = mongoose.model('category', userSchema)
+module.exports = mongoose.model('category', categorySchema)
