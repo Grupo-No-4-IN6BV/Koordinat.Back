@@ -5,7 +5,7 @@ var api = express.Router();
 var mdAuth = require('../middlewares/auth');
 var userController = require('../controllers/user.controller');
 
-
+api.post('/login', userController.login);
 api.post('/saveUser', userController.saveUser);
 api.get('/getUsers', userController.getUsers);
 api.put('/updateUser/:id', userController.updateUser);

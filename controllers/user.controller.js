@@ -9,6 +9,42 @@ var fs =require('fs');
 var path = require('path');
 
 
+function login(req, res){
+    var params = req.body;
+
+    if(params.username && params.password){
+        User.findOne({username: params.username}, (err, userFind) => {
+            if(err){
+                return res.status(500).send({message: "Error al intentar buscar al usuario"})
+            }else if(userFind){
+                bcrypt.compare(params.password, userFind.password, (err, checkPassword) => {
+                    if(err){
+                        return res.status(500).send({message: "Error al comparar la contraseña, intente con de nuevo"})
+                    }else if(checkPassword){
+                        if(params.gettoken){
+                            res.send({
+                                message: "Usuario logeado exitosamente",
+                                token: jwt.createToken(userFind),
+				                user: userFind
+                            })
+                        }else{
+                            return res.send({ message: "Usuario logeado exitosamente", userFind})
+                        }
+                    }else{
+                        return res.send({message: "Contraseña incorrecta, intente de nuevo"})
+                    }
+                })
+            }else{
+                return res.send({message: "El usuario ingresado no existe, intente de nuevo"})
+            }
+        })
+    }else{
+        return res.status(404).send({message: "Ingrese Username y Contraseña"})
+    }
+}
+
+
+
 function saveUser(req, res){
     var user = new User();
     var params = req.body;
@@ -199,6 +235,7 @@ function registerUser(req, res){
 }
 
 module.exports ={
+    login,
     saveUser,
     getUsers,
     updateUser,
