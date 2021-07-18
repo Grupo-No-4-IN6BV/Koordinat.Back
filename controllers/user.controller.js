@@ -49,7 +49,7 @@ function saveUser(req, res){
     var user = new User();
     var params = req.body;
 
-    if(params.name && params.username && params.password && params.email){
+    if(params.name && params.username && params.password && params.email && params.role){
         User.findOne({username: params.username}, (err, userFind) => {
             if(err){
                 return res.status(404).send({message: 'Error general al buscar usuario'})
@@ -64,7 +64,7 @@ function saveUser(req, res){
                         user.name = params.name;
                         user.username = params.username;
                         user.email = params.email;
-                        user.role = 'ROLE_USER';
+                        user.role = params.role;
                         
                         user.save((err, userSaved) => {
                             if(err){

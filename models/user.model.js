@@ -11,6 +11,7 @@ var userSchema = Schema ({
     email: String,
     role: String,
     image: String,
+    wishList: [{type: Schema.ObjectId, ref: "product"}],
     categories: [{type: Schema.ObjectId, ref: "category"}]
 })
 

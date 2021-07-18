@@ -7,6 +7,8 @@ var businessRoutes = require('./routes/business.routes');
 var userRoutes = require('./routes/user.routes');
 var categoryRoutes = require('./routes/category.routes');
 var productRoutes = require ('./routes/product.routes');
+var cartRoutes = require('./routes/shoppingCart.routes');
+var wishRoutes = require('./routes/wishList.routes');
 
 var app = express();
 
@@ -20,5 +22,7 @@ app.use('/api', businessRoutes);
 app.use('/api', userRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', productRoutes);
+app.use('/api', cartRoutes);
+app.use('/api', wishRoutes);
 
 module.exports = app;
