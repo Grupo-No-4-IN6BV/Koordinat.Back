@@ -4,7 +4,7 @@ var Wish = require('../models/wishList.model');
 var User = require('../models/user.model');
 var Product = require('../models/product.model');
 
-function addWish (req, res){
+/*function addWish (req, res){  //NO LE HAGAN CASO, ME BUGIE CUANDO LO HICE
     var userId = req.params.idU;
     var productId = req.params.idP;
     var params = req.body;
@@ -54,7 +54,7 @@ function addWish (req, res){
             return res.status(404).send({message: 'Maybe no existe user'});
         }
     })
-} 
+} */
 
 function wishSet (req, res){
     var userId = req.params.idU;
@@ -103,7 +103,7 @@ function removeWish (req, res){
 }
 
 module.exports = {
-    addWish,
+   /* addWish,*/
     wishSet,
     removeWish
 }
