@@ -12,6 +12,13 @@ var userSchema = Schema ({
     role: String,
     image: String,
     wishList: [{type: Schema.ObjectId, ref: "product"}],
+    cartShopping: [{
+        idProducto: Number,
+        nombre: String,
+        cantidad: Number,
+        subtotal: Number,
+        total: Number
+        }],
     categories: [{type: Schema.ObjectId, ref: "category"}]
 })
 
