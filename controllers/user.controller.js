@@ -39,7 +39,7 @@ function login(req, res){
             }
         })
     }else{
-        return res.status(404).send({message: "Ingrese Username y Contraseña"})
+        return res.send({message: "Ingrese Username y Contraseña"})
     }
 }
 
@@ -197,6 +197,7 @@ function removeUser(req, res){
 function registerUser(req, res){
     var user = new User();
     var params = req.body;
+    console.log('entra')
 
     if(params.name && params.username && params.password && params.email){
         User.findOne({username: params.username}, (err, userFind)=>{
@@ -211,9 +212,12 @@ function registerUser(req, res){
                     }else if(passwordHash){
                         user.password = passwordHash;
                         user.name = params.name;
+                        user.lastname = params.lastname;
                         user.username = params.username;
                         user.email = params.email;
                         user.role = 'ROLE_USER';
+                        user.lat = params.lat;
+                        user.lng = params.lng;
                         user.save((err, saveUser)=>{
                             if(err){
                                 return res.status(404).send({message: "Error general"})
