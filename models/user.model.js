@@ -17,13 +17,7 @@ var userSchema = Schema ({
     lng: Number,
     //-------------
     wishList: [{type: Schema.ObjectId, ref: "product"}],
-    cartShopping: [{
-        idProducto: Number,
-        nombre: String,
-        cantidad: Number,
-        subtotal: Number,
-        total: Number
-        }],
+    cartShopping: [{type: Schema.ObjectId, ref: "cart"}],
     categories: [{type: Schema.ObjectId, ref: "category"}]
 })
 
