@@ -1,6 +1,5 @@
 'use strict'
 
-var Wish = require('../models/wishList.model');
 var User = require('../models/user.model');
 var Product = require('../models/product.model');
 
