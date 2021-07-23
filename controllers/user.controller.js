@@ -1,6 +1,7 @@
 'user strict'
 
 var User = require('../models/user.model');
+var Business = require('../models/business.model');
 var category =require('../models/category.model')
 var bcrypt = require('bcrypt-nodejs');
 var jwt = require('../services/jwt');
@@ -12,8 +13,8 @@ var path = require('path');
 function login(req, res){
     var params = req.body;
 
-    if(params.username && params.password){
-        User.findOne({username: params.username}, (err, userFind) => {
+    if(params.email && params.password){
+        User.findOne({email: params.email}, (err, userFind) => {
             if(err){
                 return res.status(500).send({message: "Error al intentar buscar al usuario"})
             }else if(userFind){
@@ -35,7 +36,33 @@ function login(req, res){
                     }
                 })
             }else{
-                return res.send({message: "El usuario ingresado no existe, intente de nuevo"})
+                console.log('entra')
+                Business.findOne({email: params.email}, (err, businessFind) => {
+                    if(err){
+                        return res.status(500).send({message: "Error al intentar buscar la empresa"})
+                    }else if(businessFind){
+                        console.log(userFind)
+                        bcrypt.compare(params.password, businessFind.password, (err, checkPassword) => {
+                            if(err){
+                                return res.status(500).send({message: "Error al comparar la contraseña, intente con de nuevo"})
+                            }else if(checkPassword){
+                                if(params.gettoken){
+                                    res.send({
+                                        message: "Empresa logeada exitosamente",
+                                        token: jwt.createToken(businessFind),
+                                        business: businessFind
+                                    })
+                                }else{
+                                    return res.send({ message: "Empresa logeado exitosamente", businessFind})
+                                }
+                            }else{
+                                return res.send({message: "Contraseña incorrecta, intente de nuevo"})
+                            }
+                        })
+                    }else{
+                        return res.send({message: "La Empresa o Usuario ingresados no existes, intente de nuevo"})
+                    }
+                })
             }
         })
     }else{
@@ -65,6 +92,7 @@ function saveUser(req, res){
                         user.username = params.username;
                         user.email = params.email;
                         user.role = params.role;
+                        
                         
                         user.save((err, userSaved) => {
                             if(err){
@@ -215,9 +243,11 @@ function registerUser(req, res){
                         user.lastname = params.lastname;
                         user.username = params.username;
                         user.email = params.email;
+                        user.dateage = params.dateage;
                         user.role = 'ROLE_USER';
                         user.lat = params.lat;
                         user.lng = params.lng;
+
                         user.save((err, saveUser)=>{
                             if(err){
                                 return res.status(404).send({message: "Error general"})
