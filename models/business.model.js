@@ -7,10 +7,8 @@ var businessSchema = Schema({
     name: String,
     email: String,
     description: String,
-    address: [{
-        lat: Number,
-        lng: Number
-    }],
+    lat: Number,
+    lng: Number,
     phone: String,
     image: String,
     password: String,

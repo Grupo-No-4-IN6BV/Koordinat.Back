@@ -10,6 +10,44 @@ var fs =require('fs');
 var path = require('path');
 
 
+function initAdmin(req, res){
+    let user = new User();
+    user.username = 'ADMIN'
+    user.email = 'Admin@admin'
+    user.password = 'admin123'
+
+    User.findOne({username: user.username}, (err, adminFind)=>{
+        if(err){
+            return res.status(500).send({message: 'Error general durante la creación del usuario «Administrador»'});
+        }else if(adminFind){
+            return console.log('Usuario «Administrador» ya existente')
+        }else{
+            bcrypt.hash(user.password, null, null, (err, passwordHash)=>{
+                if(err){
+                    return res.status(500).send({message: 'Error al intentar comparar las contraseñas'})
+                }else if(passwordHash){
+                    user.password = passwordHash;
+                    user.username = user.username;
+                    user.email = user.email
+                    user.role = 'ROLE_ADMIN';
+                    user.save((err, userSaved)=>{
+                        if(err){
+                            return res.status(500).send({message: 'Error al guardar al usuario «Administrador»'})
+                        }else if(userSaved){
+                            return console.log('«Administrador» creado satisfactoriamente')
+                        }else{
+                            return res.status(500).send({message: 'El usuario «Administrador» no fue guardado'})
+                        }
+                    })
+                }else{
+                    return res.status(403).send({message: 'La encriptación de la contraseña falló'})
+                }
+            })
+        }
+    })
+}
+
+
 function login(req, res){
     var params = req.body;
 
@@ -36,7 +74,6 @@ function login(req, res){
                     }
                 })
             }else{
-                console.log('entra')
                 Business.findOne({email: params.email}, (err, businessFind) => {
                     if(err){
                         return res.status(500).send({message: "Error al intentar buscar la empresa"})
@@ -269,6 +306,7 @@ function registerUser(req, res){
 }
 
 module.exports ={
+    initAdmin,
     login,
     saveUser,
     getUsers,

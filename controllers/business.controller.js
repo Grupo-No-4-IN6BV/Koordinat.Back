@@ -177,6 +177,8 @@ function registerBusiness (req, res){
                         business.description = params.description;
                         business.phone = params.phone;
                         business.image = params.image;
+                        business.lat = params.lat;
+                        business.lng = params.lng;
                         business.role = 'ROLE_BUSINESS';
 
                         business.save((err, businessSaved)=>{
