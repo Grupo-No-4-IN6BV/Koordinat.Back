@@ -5,10 +5,6 @@ var api = express.Router();
 var mdAuth = require('../middlewares/auth');
 var cartController = require('../controllers/shoppingCart.controller');
 
-//api.post('/agregarItem/:idP', mdAuth.ensureAuth ,cartController.agregarItem);
-//api.post('/saveCart/:idU/:idP', cartController.saveCart);
-//api.post('/item/:idU', cartController.item);
-//api.post('/:idU/:idP/add2', cartController.add2);
 api.post('/shopping/:id', cartController.shopping);
 api.post('/:idU/removeItem/:idI', cartController.removeItem);
 module.exports = api;

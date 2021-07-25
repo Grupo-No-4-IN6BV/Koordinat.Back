@@ -9,5 +9,5 @@ var shoppingCartSchema = Schema({
     cantidad: Number,
     subtotal: Number
 })
-
+//Models
 module.exports = mongoose.model('cart', shoppingCartSchema);
