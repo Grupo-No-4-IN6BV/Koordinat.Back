@@ -25,6 +25,11 @@ function saveProduct(req, res){
                                 product.price = params.price;
                                 product.stock = params.stock;
                                 product.category = categoryFind.id;
+                                product.img1 = params.img1
+                                product.img2 = params.img2
+                                product.img3 = params.img3
+                                product.img4 = params.img4
+                                product.img5 = params.img5                               
 
                                 product.save((err, productSaved)=>{
                                     if(err){
@@ -41,6 +46,11 @@ function saveProduct(req, res){
                                 product.price = params.price;
                                 product.stock = 0;
                                 product.category = categoryFind.id;
+                                product.img1 = params.img1
+                                product.img2 = params.img2
+                                product.img3 = params.img3
+                                product.img4 = params.img4
+                                product.img5 = params.img5    
 
                                 product.save((err, productSaved)=>{
                                     if(err){
@@ -69,6 +79,11 @@ function saveProduct(req, res){
                                 product.price = params.price;
                                 product.stock = params.stock;
                                 product.category = categoryFind.id;
+                                product.img1 = params.img1
+                                product.img2 = params.img2
+                                product.img3 = params.img3
+                                product.img4 = params.img4
+                                product.img5 = params.img5    
 
                                 product.save((err, productSaved)=>{
                                     if(err){
@@ -85,6 +100,11 @@ function saveProduct(req, res){
                                 product.price = params.price;
                                 product.stock = 0;
                                 product.category = categoryFind.id;
+                                product.img1 = params.img1
+                                product.img2 = params.img2
+                                product.img3 = params.img3
+                                product.img4 = params.img4
+                                product.img5 = params.img5    
 
                                 product.save((err, productSaved)=>{
                                     if(err){

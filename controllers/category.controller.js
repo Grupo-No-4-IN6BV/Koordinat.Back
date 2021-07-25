@@ -31,7 +31,7 @@ function saveCategory(req, res){
     var category  = new Category();
     var params = req.body;
 
-    if(params.name || params.description){
+    if(params.name){
         Category.findOne({name: params.name}, (err, categoryFind)=>{
             if(err){
                 return res.status(500).send({message: 'Error gneral al guardar categoria'})
@@ -39,7 +39,7 @@ function saveCategory(req, res){
                 res.send({message: 'Categoria solicitado ya existe'});
             }else{
                 category.name = params.name;
-                
+                category.description = params.description
                 category.save((err,categorySaved)=>{
                     if(err){
                         return res.status(500).send({message: 'Error general al guardar cartegoria'});
@@ -135,7 +135,22 @@ function removeCategory(req, res){
     }).populate('leagues')
 
 }
+
+function getCategories(req, res){
+    Category.find({}).exec((err, categories) => {
+        if(err){
+            return res.status(500).send({message: "Error al buscar las Categorias"})
+        }else if(categories){
+            return res.send({message: "Las categorias han sido encontradas", categories})
+        }else{
+            return res.status(204).send({message: "No se encontraron las categorias"})
+        }
+    })
+}
+
+
 module.exports={
+    getCategories,
     creatDefault,
     saveCategory,
     searchCategory,

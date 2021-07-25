@@ -68,7 +68,6 @@ function getInterprises(req, res){
         if(err){
             return res.status(500).send({message: "Error al buscar las empresas"})
         }else if(interprises){
-            console.log(leagues)
             return res.send({message: "Las empresas han sido encontradas", interprises})
         }else{
             return res.status(204).send({message: "No se encontraron las empresas"})

@@ -9,7 +9,13 @@ var productSchema = Schema({
     stock: Number,
     solds: Number,
 
-    category: [{type: Schema.ObjectId, ref:'category'}] 
+    img1: String,
+    img2: String,
+    img3: String,
+    img4: String,
+    img5: String,
+
+    category: {type: Schema.ObjectId, ref:'category'}
 })
 
 module.exports = mongoose.model('product', productSchema);
