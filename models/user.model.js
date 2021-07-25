@@ -12,6 +12,7 @@ var userSchema = Schema ({
     email: String,
     role: String,
     image: String,
+    dateage: String,
     //<<ubicacion>>
     lat: Number,
     lng: Number,

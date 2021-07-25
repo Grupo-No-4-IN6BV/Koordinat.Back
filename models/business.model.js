@@ -7,9 +7,12 @@ var businessSchema = Schema({
     name: String,
     email: String,
     description: String,
-    address: String,
+    lat: Number,
+    lng: Number,
     phone: String,
     image: String,
+    password: String,
+    role: String,
 
     products:[{type: Schema.ObjectId, ref:'product'}]
 })

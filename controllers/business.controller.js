@@ -1,6 +1,8 @@
 'use strict'
 
 var Business = require('../models/business.model');
+var bcrypt = require('bcrypt-nodejs');
+var jwt = require('../services/jwt');
 
 function saveBusiness(req, res){
 
@@ -14,16 +16,28 @@ function saveBusiness(req, res){
             }else if(businessFind){
                 res.send({message: 'Esta empresa ya existe'});
             }else{
-
-                business.name = params.name;
-
-                business.save((err, businessSaved)=>{
+                 bcrypt.hash(params.password, null, null, (err, passwordHash) => {
                     if(err){
-                        return res.status(500).send({message: 'Error general al guardar la empresa'})
-                    }else if(businessSaved){
-                        return res.send({message: 'La empresa ha sido creada exitosamentee', businessSaved})
-                    }else {
-                        return res.status(403).send({message: 'La empresa no ha sido creada'}) 
+                        return res.status(404).send({message: "La encriptación de la contraseña falló", err})
+                    }else if(passwordHash){
+                        business.password = passwordHash;
+                        business.name = params.name;
+                        business.email = params.email;
+                        business.description = params.description;
+                        business.phone = params.phone;
+                        business.image = params.image;
+
+                        business.save((err, businessSaved)=>{
+                            if(err){
+                                return res.status(500).send({message: 'Error general al guardar la empresa'})
+                            }else if(businessSaved){
+                                return res.send({message: 'La empresa ha sido creada exitosamentee', businessSaved})
+                            }else {
+                                return res.status(403).send({message: 'La empresa no ha sido creada'}) 
+                            }
+                        })
+                    }else{
+                        return res.status(401).send({message: "la contraseña no encriptada"})
                     }
                 })
             }
@@ -146,31 +160,44 @@ function registerBusiness (req, res){
     var business = new Business();
     var params = req.body;
 
-    if(params.name && params.email && params.address && params.phone){
+    if(params.name){
         Business.findOne({name: params.name}, (err, businessFind)=>{
             if(err){
-                return res.status(404).send({message: 'Ocurrio un error en la busqueda'})
+                return res.status(500).send({message: 'Error general al guardar la empresa'});
             }else if(businessFind){
-                return res.send({message: "Este nombre ya esta registrado"})
+                res.send({message: 'Esta empresa ya existe'});
             }else{
-                business.name = params.name;
-                business.email = params.email;
-                business.description = params.description;
-                business.address = params.address;
-                business.phone = params.phone;
-                business.save((err, businessSave)=>{
+                 bcrypt.hash(params.password, null, null, (err, passwordHash) => {
                     if(err){
-                        return res.status(404).send({message: "Error general"})
-                    }else if(businessSave){
-                        return res.send({message: "Empresa registrada correctamente: ", businessSave})
+                        return res.status(404).send({message: "La encriptación de la contraseña falló", err})
+                    }else if(passwordHash){
+                        business.password = passwordHash;
+                        business.name = params.name;
+                        business.email = params.email;
+                        business.description = params.description;
+                        business.phone = params.phone;
+                        business.image = params.image;
+                        business.lat = params.lat;
+                        business.lng = params.lng;
+                        business.role = 'ROLE_BUSINESS';
+
+                        business.save((err, businessSaved)=>{
+                            if(err){
+                                return res.status(500).send({message: 'Error general al guardar la empresa'})
+                            }else if(businessSaved){
+                                return res.send({message: 'La empresa ha sido creada exitosamentee', businessSaved})
+                            }else {
+                                return res.status(403).send({message: 'La empresa no ha sido creada'}) 
+                            }
+                        })
                     }else{
-                        return res.status(403).send({message: "Error al registrarse"})
+                        return res.status(401).send({message: "la contraseña no encriptada"})
                     }
                 })
             }
         })
-    }else{
-        return res.status(404).send({message: "Ingrese los datos minimos: Nombre, correo, dirección y número"})
+    }else {
+        return res.status(404).send({message: 'Por favor llenar todos los campos requeridos'});
     }
 }
 
