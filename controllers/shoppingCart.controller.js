@@ -112,37 +112,6 @@ function saveCart (req, res){
     })
 }*/
 
-/*function add2 (req, res){
-    var userId = req.params.idU;
-    var productoId = req.params.idP;
-    var params = req.body;
-
-    User.findById(userId, (err, userFind)=>{
-        if(err){
-            return res.status(500).send({message: 'Error general en la busqueda de usuario'});
-        }else if(userFind){
-            Product.findById(productoId, (err, productFind)=>{
-                if(err){
-                    return res.status(500).send({message: 'Error general en la busqueda del producto'});
-                }else if(productFind){
-                    User.findByIdAndUpdate(userId, {$push: {cartShopping: {idProducto: productFind._id, producto: productFind.name, cantidad: params.cantidad}}}, {new:true}, (err, cartSave)=>{
-                        if(err){
-                            return res.status(500).send({message: 'Error general con el push'});
-                        }else if(cartSave){
-                            return res.send({message: 'Se actualizo el carrito', cartSave});
-                        }else{
-                            return res.status(404).send({message: 'Error general'});
-                        }
-                    }).populate('product')
-                }else{
-                    return res.status(500).send({message: 'Maybe no hay product'});
-                }
-            })
-        }else{
-            return res.status(404).send({message: 'Maybe no existe user'});
-        }
-    })
-}*/
 
 function shopping (req, res){
     var params = req.body;
