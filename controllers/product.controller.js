@@ -2,132 +2,145 @@
 
 var Product = require('../models/product.model');
 var Category = require('../models/category.model');
+var Business = require('../models/business.model');
 
 function saveProduct(req, res){
     var product = new Product();
     var params = req.body;
-
-    if(params.name && params.price){
-        Product.findOne({name: params.name}, (err, productFind)=>{
-            if(err){
-                return res.status(500).send({message: 'Error general'})
-            }else if(productFind){
-                return res.send({message: 'Producto ya fue añadido intentelo'});
+    var businessId =  req.params.idB;
+    
+    Business.findById(businessId, (err, businessFind)=>{
+        if(err){
+            res.status(500).send({message: 'Error general'});
+        }else if(businessFind){
+            if(params.name && params.price){
+                Product.findOne({name: params.name}, (err, productFind)=>{
+                    if(err){
+                        return res.status(500).send({message: 'Error general'})
+                    }else if(productFind){
+                        return res.send({message: 'Producto ya fue añadido intentelo'});
+                    }else{
+                        if(params.category){
+                            Category.findOne({name: params.category}, (err, categoryFind)=>{
+                                if(err){
+                                    return res.status(500).send({message: 'Error general'})   
+                                }else if(categoryFind){
+                                    if(params.stock){
+        
+                                        product.name = params.name;
+                                        product.price = params.price;
+                                        product.stock = params.stock;
+                                        product.business = businessFind.id;
+                                        product.category = categoryFind.id;
+                                        product.img1 = params.img1
+                                        product.img2 = params.img2
+                                        product.img3 = params.img3
+                                        product.img4 = params.img4
+                                        product.img5 = params.img5                               
+        
+                                        product.save((err, productSaved)=>{
+                                            if(err){
+                                                return res.status(500).send({message: 'Error genera'})
+                                            }else if (productSaved){
+                                                return res.send({message: 'Producto añadido exitosamente', productSaved})
+                                            }else{
+                                                return res.status(500).send({message: 'Producto no añadido'})
+                                            }
+                                        }).populate('business');
+                                    }else{
+        
+                                        product.name = params.name;
+                                        product.price = params.price;
+                                        product.stock = 0;
+                                        product.business = businessFind.id;
+                                        product.category = categoryFind.id;
+                                        product.img1 = params.img1
+                                        product.img2 = params.img2
+                                        product.img3 = params.img3
+                                        product.img4 = params.img4
+                                        product.img5 = params.img5    
+        
+                                        product.save((err, productSaved)=>{
+                                            if(err){
+                                                return res.status(500).send({message: 'Error general'})
+                                            }else if (productSaved){
+                                                return res.send({message: 'Producto creado exitosamente', productSaved})
+                                            }else{
+                                                return res.status(500).send({message: 'Producto no creado'})
+                                            }
+                                        }).populate('business');
+                                    }
+                                }else{
+                                    return res.status(404).send({message: 'No se encontro categoria'})
+                                }
+                            })
+                        }else{
+                            var categoryD = 'default';
+        
+                            Category.findOne({name: categoryD}, (err, categoryFind)=>{
+                                if(err){
+                                    return res.status(500).send({message: 'Error general'})
+                                }else if(categoryFind){
+                                    if(params.stock){
+        
+                                        product.name = params.name;
+                                        product.price = params.price;
+                                        product.stock = params.stock;
+                                        product.business = businessFind.id;
+                                        product.category = categoryFind.id;
+                                        product.img1 = params.img1
+                                        product.img2 = params.img2
+                                        product.img3 = params.img3
+                                        product.img4 = params.img4
+                                        product.img5 = params.img5    
+        
+                                        product.save((err, productSaved)=>{
+                                            if(err){
+                                                return res.status(500).send({message: 'Error general'})
+                                            }else if (productSaved){
+                                                return res.send({message: 'Producto creado exitosamente', productSaved})
+                                            }else{
+                                                return res.status(500).send({message: 'Producto no creado'})
+                                            }
+                                        }).populate('business');
+                                    }else{
+        
+                                        product.name = params.name;
+                                        product.price = params.price;
+                                        product.stock = 0;
+                                        product.business = businessFind.id;
+                                        product.category = categoryFind.id;
+                                        product.img1 = params.img1
+                                        product.img2 = params.img2
+                                        product.img3 = params.img3
+                                        product.img4 = params.img4
+                                        product.img5 = params.img5    
+        
+                                        product.save((err, productSaved)=>{
+                                            if(err){
+                                                return res.status(500).send({message: 'Error general'})
+                                            }else if (productSaved){
+                                                return res.send({message: 'Producto creado exitosamente', productSaved})
+                                            }else{
+                                                return res.status(500).send({message: 'Producto no creado'})
+                                            }
+                                        }).populate('business');
+                                    }
+                                }else{
+                                    return res.status(404).send({message: 'No se encontro categoria'})
+                                }
+                            }) 
+                        }
+                    }
+                })
             }else{
-                if(params.category){
-                    Category.findOne({name: params.category}, (err, categoryFind)=>{
-                        if(err){
-                            return res.status(500).send({message: 'Error general'})   
-                        }else if(categoryFind){
-                            if(params.stock){
-
-                                product.name = params.name;
-                                product.price = params.price;
-                                product.stock = params.stock;
-                                product.category = categoryFind.id;
-                                product.img1 = params.img1
-                                product.img2 = params.img2
-                                product.img3 = params.img3
-                                product.img4 = params.img4
-                                product.img5 = params.img5                               
-
-                                product.save((err, productSaved)=>{
-                                    if(err){
-                                        return res.status(500).send({message: 'Error genera'})
-                                    }else if (productSaved){
-                                        return res.send({message: 'Producto añadido exitosamente', productSaved})
-                                    }else{
-                                        return res.status(500).send({message: 'Producto no añadido'})
-                                    }
-                                })
-                            }else{
-
-                                product.name = params.name;
-                                product.price = params.price;
-                                product.stock = 0;
-                                product.category = categoryFind.id;
-                                product.img1 = params.img1
-                                product.img2 = params.img2
-                                product.img3 = params.img3
-                                product.img4 = params.img4
-                                product.img5 = params.img5    
-
-                                product.save((err, productSaved)=>{
-                                    if(err){
-                                        return res.status(500).send({message: 'Error general'})
-                                    }else if (productSaved){
-                                        return res.send({message: 'Producto creado exitosamente', productSaved})
-                                    }else{
-                                        return res.status(500).send({message: 'Producto no creado'})
-                                    }
-                                })
-                            }
-                        }else{
-                            return res.status(404).send({message: 'No se encontro categoria'})
-                        }
-                    })
-                }else{
-                    var categoryD = 'default';
-
-                    Category.findOne({name: categoryD}, (err, categoryFind)=>{
-                        if(err){
-                            return res.status(500).send({message: 'Error general'})
-                        }else if(categoryFind){
-                            if(params.stock){
-
-                                product.name = params.name;
-                                product.price = params.price;
-                                product.stock = params.stock;
-                                product.category = categoryFind.id;
-                                product.img1 = params.img1
-                                product.img2 = params.img2
-                                product.img3 = params.img3
-                                product.img4 = params.img4
-                                product.img5 = params.img5    
-
-                                product.save((err, productSaved)=>{
-                                    if(err){
-                                        return res.status(500).send({message: 'Error general'})
-                                    }else if (productSaved){
-                                        return res.send({message: 'Producto creado exitosamente', productSaved})
-                                    }else{
-                                        return res.status(500).send({message: 'Producto no creado'})
-                                    }
-                                })
-                            }else{
-
-                                product.name = params.name;
-                                product.price = params.price;
-                                product.stock = 0;
-                                product.category = categoryFind.id;
-                                product.img1 = params.img1
-                                product.img2 = params.img2
-                                product.img3 = params.img3
-                                product.img4 = params.img4
-                                product.img5 = params.img5    
-
-                                product.save((err, productSaved)=>{
-                                    if(err){
-                                        return res.status(500).send({message: 'Error general'})
-                                    }else if (productSaved){
-                                        return res.send({message: 'Producto creado exitosamente', productSaved})
-                                    }else{
-                                        return res.status(500).send({message: 'Producto no creado'})
-                                    }
-                                })
-                            }
-                        }else{
-                            return res.status(404).send({message: 'No se encontro categoria'})
-                        }
-                    }) 
-                }
+                return res.status(401).send({message: 'Por favor llenar los campos obligatorios'})
             }
-        })
-    }else{
-        return res.status(401).send({message: 'Por favor llenar los campos obligatorios'})
-    }
+        }else{
+            res.status(404).send({message: 'No hay registros de dicha empresa'});
+        }
+    })
 }
-
 
 function updateProduct(req, res){
     let productId = req.params.id;

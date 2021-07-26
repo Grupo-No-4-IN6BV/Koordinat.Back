@@ -9,6 +9,8 @@ var categoryRoutes = require('./routes/category.routes');
 var productRoutes = require ('./routes/product.routes');
 var cartRoutes = require('./routes/shoppingCart.routes');
 var wishRoutes = require('./routes/wishList.routes');
+var invoiceRoutes = require('./routes/invoice.routes');
+
 
 var app = express();
 
@@ -24,5 +26,6 @@ app.use('/api', categoryRoutes);
 app.use('/api', productRoutes);
 app.use('/api', cartRoutes);
 app.use('/api', wishRoutes);
+app.use('/api', invoiceRoutes);
 
 module.exports = app;

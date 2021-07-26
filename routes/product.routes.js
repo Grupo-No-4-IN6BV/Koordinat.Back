@@ -6,7 +6,7 @@ var mdAuth = require('../middlewares/auth');
 
 var api = express.Router();
 
-api.post('/saveProduct', [mdAuth.ensureAuth, mdAuth.ensureAuthAdmin], productController.saveProduct);
+api.post('/saveProduct/:idB', [mdAuth.ensureAuth, mdAuth.ensureAuthAdmin], productController.saveProduct);
 api.put('/updateProduct/:id', [mdAuth.ensureAuth, mdAuth.ensureAuthAdmin], productController.updateProduct);
 api.put('/controlStock', [mdAuth.ensureAuth, mdAuth.ensureAuthAdmin], productController.controlStock);
 api.delete('/removeProduct/:id', [mdAuth.ensureAuth, mdAuth.ensureAuthAdmin], productController.removeProduct);

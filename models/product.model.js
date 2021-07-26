@@ -15,7 +15,8 @@ var productSchema = Schema({
     img4: String,
     img5: String,
 
-    category: {type: Schema.ObjectId, ref:'category'}
+    category: {type: Schema.ObjectId, ref:'category'},
+    business: {type: Schema.ObjectId, ref:'business'}
 })
 
 module.exports = mongoose.model('product', productSchema);

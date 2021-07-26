@@ -5,7 +5,7 @@ var api = express.Router();
 var mdAuth = require('../middlewares/auth');
 var businessController = require('../controllers/business.controller');
 
-api.post('/saveBusiness', businessController.saveBusiness);
+api.post('/saveBusiness', [mdAuth.ensureAuth, mdAuth.ensureAuthAdmin], businessController.saveBusiness);
 api.put('/getBusiness/:idB', [mdAuth.ensureAuth], businessController.getBusiness);
 api.get('/getInterprises',businessController.getInterprises)
 api.post('/searchBusiness', businessController.searchBusiness);
