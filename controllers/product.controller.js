@@ -46,7 +46,7 @@ function saveProduct(req, res){
                                             }else{
                                                 return res.status(500).send({message: 'Producto no añadido'})
                                             }
-                                        }).populate('business');
+                                        })
                                     }else{
         
                                         product.name = params.name;
@@ -68,12 +68,12 @@ function saveProduct(req, res){
                                             }else{
                                                 return res.status(500).send({message: 'Producto no creado'})
                                             }
-                                        }).populate('business');
+                                        })
                                     }
                                 }else{
                                     return res.status(404).send({message: 'No se encontro categoria'})
                                 }
-                            })
+                            }).populate('business');
                         }else{
                             var categoryD = 'default';
         
@@ -102,7 +102,7 @@ function saveProduct(req, res){
                                             }else{
                                                 return res.status(500).send({message: 'Producto no creado'})
                                             }
-                                        }).populate('business');
+                                        })
                                     }else{
         
                                         product.name = params.name;
@@ -124,12 +124,12 @@ function saveProduct(req, res){
                                             }else{
                                                 return res.status(500).send({message: 'Producto no creado'})
                                             }
-                                        }).populate('business');
+                                        })
                                     }
                                 }else{
                                     return res.status(404).send({message: 'No se encontro categoria'})
                                 }
-                            }) 
+                            }).populate('business');
                         }
                     }
                 })
