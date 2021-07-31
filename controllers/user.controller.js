@@ -78,7 +78,6 @@ function login(req, res){
                     if(err){
                         return res.status(500).send({message: "Error al intentar buscar la empresa"})
                     }else if(businessFind){
-                        console.log(userFind)
                         bcrypt.compare(params.password, businessFind.password, (err, checkPassword) => {
                             if(err){
                                 return res.status(500).send({message: "Error al comparar la contraseña, intente con de nuevo"})
@@ -101,7 +100,7 @@ function login(req, res){
                     }
                 })
             }
-        })
+        }).populate('wishList')
     }else{
         return res.send({message: "Ingrese Username y Contraseña"})
     }
@@ -126,7 +125,7 @@ function saveUser(req, res){
                     }else if(passwordHash){
                         user.password = passwordHash;
                         user.name = params.name;
-                        user.username = params.username;
+                        user.phone = params.phone;
                         user.email = params.email;
                         user.role = params.role;
                         
@@ -264,12 +263,12 @@ function registerUser(req, res){
     var params = req.body;
     console.log('entra')
 
-    if(params.name && params.username && params.password && params.email){
-        User.findOne({username: params.username}, (err, userFind)=>{
+    if(params.name && params.password && params.email){
+        User.findOne({email: params.email}, (err, userFind)=>{
             if(err){
                 return res.status(404).send({message: 'Ocurrio un error en la busqueda'})
             }else if(userFind){
-                return res.send({message: "Este nombre de usuario ya no esta disponible"})
+                return res.send({message: "Este correo de usuario ya no esta disponible"})
             }else{
                 bcrypt.hash(params.password, null, null, (err, passwordHash)=>{
                     if(err){
@@ -278,7 +277,7 @@ function registerUser(req, res){
                         user.password = passwordHash;
                         user.name = params.name;
                         user.lastname = params.lastname;
-                        user.username = params.username;
+                        user.phone = params.phone;
                         user.email = params.email;
                         user.dateage = params.dateage;
                         user.role = 'ROLE_USER';

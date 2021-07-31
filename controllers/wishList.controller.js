@@ -58,7 +58,6 @@ var Product = require('../models/product.model');
 function wishSet (req, res){
     var userId = req.params.idU;
     var productId = req.params.idP;
-
     User.findById(userId, (err, userFind)=>{
         if(err){
             return res.status(500).send({message: 'Error general en la busqueda de usuario'});
@@ -75,7 +74,7 @@ function wishSet (req, res){
                         }else{
                             return res.status(404).send({message: 'Error general 5, creo'});
                         }
-                    }).populate('product')
+                    }).populate('wishList')
                 }else{
                     return res.status(500).send({message: 'Maybe no hay product'});
                 }
@@ -94,11 +93,11 @@ function removeWish (req, res){
         if(err){
             return res.status(500).send({message: 'Error general en el pull'});
         }else if(wishPull){
-            return res.status(500).send({message: 'Creo q se borro el producto', wishPull});
+            return res.send({message: 'Creo q se borro el producto', wishPull});
         }else{  
             return res.status(404).send({message: 'No se encontro el produc en la wish en el user'});
         }
-    }).populate('product')
+    }).populate('wishList')
 }
 
 module.exports = {

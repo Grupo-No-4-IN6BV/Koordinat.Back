@@ -40,6 +40,7 @@ function saveCategory(req, res){
             }else{
                 category.name = params.name;
                 category.description = params.description
+                category.image = params.image
                 category.save((err,categorySaved)=>{
                     if(err){
                         return res.status(500).send({message: 'Error general al guardar cartegoria'});
@@ -81,7 +82,7 @@ function updateCategory(req, res){
     let update =req.body;
 
     if(update.name){
-            User.findOne({_id: userId, category: categoryId}, (err, userCategory)=>{
+            User.findById({_id: userId, category: categoryId}, (err, userCategory)=>{
                 if(err){
                     return res.status(500).send({message: 'Error general al actualizar'})
                 }else if(userCategory){

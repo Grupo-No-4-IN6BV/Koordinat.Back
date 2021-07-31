@@ -5,6 +5,7 @@ var Category = require('../models/category.model');
 var Business = require('../models/business.model');
 
 function saveProduct(req, res){
+    
     var product = new Product();
     var params = req.body;
     var businessId =  req.params.idB;
@@ -21,7 +22,7 @@ function saveProduct(req, res){
                         return res.send({message: 'Producto ya fue añadido intentelo'});
                     }else{
                         if(params.category){
-                            Category.findOne({name: params.category}, (err, categoryFind)=>{
+                            Category.findOne({_id: params.category}, (err, categoryFind)=>{
                                 if(err){
                                     return res.status(500).send({message: 'Error general'})   
                                 }else if(categoryFind){
@@ -32,6 +33,7 @@ function saveProduct(req, res){
                                         product.stock = params.stock;
                                         product.business = businessFind.id;
                                         product.category = categoryFind.id;
+                                        product.description = params.description;
                                         product.img1 = params.img1
                                         product.img2 = params.img2
                                         product.img3 = params.img3
@@ -54,6 +56,7 @@ function saveProduct(req, res){
                                         product.stock = 0;
                                         product.business = businessFind.id;
                                         product.category = categoryFind.id;
+                                        product.description = params.description;
                                         product.img1 = params.img1
                                         product.img2 = params.img2
                                         product.img3 = params.img3
@@ -71,7 +74,8 @@ function saveProduct(req, res){
                                         })
                                     }
                                 }else{
-                                    return res.status(404).send({message: 'No se encontro categoria'})
+                                    console.log(params)
+                                    return res.send({message: 'No se encontro categoria'})
                                 }
                             }).populate('business');
                         }else{
@@ -88,6 +92,7 @@ function saveProduct(req, res){
                                         product.stock = params.stock;
                                         product.business = businessFind.id;
                                         product.category = categoryFind.id;
+                                        product.description = params.description;
                                         product.img1 = params.img1
                                         product.img2 = params.img2
                                         product.img3 = params.img3
@@ -110,6 +115,7 @@ function saveProduct(req, res){
                                         product.stock = 0;
                                         product.business = businessFind.id;
                                         product.category = categoryFind.id;
+                                        product.description = params.description;
                                         product.img1 = params.img1
                                         product.img2 = params.img2
                                         product.img3 = params.img3
@@ -206,7 +212,9 @@ function updateProduct(req, res){
 }
 
 
+
 function removeProduct(req, res){
+    console.log('entra');
     let productId = req.params.id;
 
     Product.findByIdAndRemove(productId, (err, productRemoved)=>{
@@ -220,36 +228,48 @@ function removeProduct(req, res){
     })
 }
 
-
 function getProduct(req, res){
     let productId = req.params.id;
 
-    Product.findById(productId).exec((err, productFind)=>{
+    Product.findById(productId).exec((err, product)=>{
         if(err){
             return res.status(500).send({message: 'Error en el servidor'});
-        }else if(productFind){
-            return res.status(200).send({message: 'Producto encontrado', product}.populate('product'))
+        }else if(product){
+            return res.status(200).send({message: 'Producto encontrado', product})
         }else{
             return res.status(404).send({message: 'No hay registro de producto'})
         }
-    }).populate('category')
+    })
 }
 
 
-function getProducts(req, res){
-    Product.find({}).populate('category').exec((err, productsFind)=>{
+function getProductNews(req, res){
+    Product.find({}).sort({$natural:-1}).limit(8).exec((err, productsFind)=>{
         if(err){
             return res.status(500).send({message: 'Error en el servidor'});
         }else if(productsFind){
-            return res.send({message: 'Productos encontrados:', products});
+            return res.status(200).send({message: 'Producto encontrado', productsFind})
         }else{
-            return res.status(200).send({message: 'No hay registros de productos'});
+            return res.status(404).send({message: 'No hay registro de producto'})
+        }
+    })
+}
+
+function getProducts(req, res){
+    Product.find({}).exec((err, productsFind)=>{
+        if(err){
+            return res.status(500).send({message: 'Error en el servidor'});
+        }else if(productsFind){
+            return res.send({message: 'Productos encontrados:', productsFind});
+        }else{
+            return res.send({message: 'No hay registros de productos'});
         }
     })
 }
 
 function spentProducts(req, res){
-    Product.find({stock: 0}).exec((err, products)=>{
+    let businessId = req.params.idB;
+    Product.find({business: businessId}).exec((err, products)=>{
         if(err){
             return res.status(500).send({message: 'Error en el servidor'});
         }else if(products){
@@ -305,9 +325,10 @@ module.exports = {
     saveProduct,
     updateProduct,
     removeProduct,
-    getProduct,
+    getProductNews,
     getProducts,
     spentProducts,
     controlStock,
-    searchProduct
+    searchProduct,
+    getProduct
 }

@@ -8,7 +8,7 @@ var productSchema = Schema({
     price: Number,
     stock: Number,
     solds: Number,
-
+    description: String,
     img1: String,
     img2: String,
     img3: String,

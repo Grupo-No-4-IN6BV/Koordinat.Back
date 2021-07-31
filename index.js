@@ -16,3 +16,4 @@ mongoose.connect('mongodb://localhost:27017/DBKoordinat', {useNewUrlParser: true
             console.log('server express is running')
         })
     }).catch((err)=>console.log('connection error to database', err))
+
