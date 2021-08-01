@@ -13,33 +13,34 @@ function CheckIn (req, res){
     User.findById(userId, (err, userFind)=>{
         if(err){
             res.status(500).send({message: 'Error general'});
-        }else if(userFind){
+        }else if(userFind){   
             Cart.findById(cartId, (err, cartFind)=>{
                 if(err){
-                    res.status(500).send({message: 'Error general2'});
+                    return res.status(500).send({message: 'Error general 2'});
                 }else if(cartFind){
                     invoice.nameUser = userFind.name + ', ' + userFind.lastname;
                     var fecha = today.getDate() + '-' + (today.getMonth()+1) + '-' + today.getFullYear();
                     var hora = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
                     var FechayHora = fecha + ' at ' + hora;
                     invoice.date = FechayHora;
-                    invoice.details = cartFind.slice();
-
+                    invoice.details = userFind.cartShopping.slice();
+        
                     invoice.save((err, invoiceSave)=>{
                         if(err){
-                            return res.status(500).send({message: 'Error general al guardar', err});
+                            return res.status(500).send({message: 'Error general al guardar'});
                         }else if(invoiceSave){
-                            User.findByIdAndUpdate(userId, {$push:{invoices: invoiceSave._id}}, {new: true}, (err, userPush)=>{
+                            User.findByIdAndUpdate(userId, {$push:{invoices: invoiceSave._id}}, {new: true}, (err, invoicePush)=>{
                                 if(err){
                                     return res.status(500).send({message: 'Error general'});
-                                }else if(userPush){
-                                    Cart.findByIdAndRemove(cartId, (err, cartRemoved)=>{
+                                }else if(invoicePush){
+                                    let cartEmpty = null;
+                                    User.findByIdAndUpdate(userId, {$set: {cartShopping: cartEmpty}}, {new:true}, (err, userUpdated)=>{
                                         if(err){
-                                            return res.status(500).send({message: 'Error en el servidor'});
-                                        }else if(cartRemoved){
-                                            return res.send({message: 'Factura almacenada', cartRemoved, userPush});
+                                            return res.status(500).send({message: 'Error general al limpiar carro'});
+                                        }else if(userUpdated){
+                                            return res.send({message: 'Factura almacenada', userUpdated, invoicePush});
                                         }else{
-                                            return res.status(404).send({message: 'No hay registro o ya se limpio el carrito de compras'});
+                                            res.status(404).send({message: 'No hay registro del usuario1'}); 
                                         }
                                     })
                                 }else{
@@ -49,13 +50,13 @@ function CheckIn (req, res){
                         }else{
                             return res.status(404).send({message: 'Error al almacenar factura'});
                         }
-                    }).populate('details')
+                    })
                 }else{
-                    res.status(404).send({message: 'No hay registro del carrito de compras'});
+                    res.status(404).send({message: 'No hay registro del de carro'});
                 }
-            })
+            })  
         }else{
-            res.status(404).send({message: 'No hay registro del usuario'});
+            res.status(404).send({message: 'No hay registro del usuario2'});
         }
     })
 }
