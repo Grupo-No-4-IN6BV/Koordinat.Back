@@ -99,7 +99,7 @@ function login(req, res){
                     }
                 })
             }
-        }).populate('wishList')
+        }).populate('cartShopping').populate('wishList')
     }else{
         return res.send({message: "Ingrese Username y Contraseña"})
     }

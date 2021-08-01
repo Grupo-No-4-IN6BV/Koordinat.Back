@@ -13,7 +13,7 @@ function shopping (req, res){
         if(err){
             res.status(500).send({message: 'Error general'});
         }else if(userFind){
-            Product.findOne({name: params.nombreProducto}, (err, productFind)=>{
+            Product.findOne({_id: params._id}, (err, productFind)=>{
                 if(err){
                     res.status(500).send({message: 'Error general2'});
                 }else if(productFind){
@@ -26,14 +26,13 @@ function shopping (req, res){
                             if(err){
                                 return res.status(500).send({message: 'Error general', err});
                            }else if(find){
-                               console.log(find)
                                 if(find == ''){
                                     console.log('No esta este producto en tu carrito')
                                     carrito.idUsuario = userFind.id;
                                     carrito.idProducto = productFind.id;
                                     carrito.producto = productFind.name;
-                                    carrito.cantidad = params.cantidad;
-                                    carrito.subtotal = params.cantidad * productFind.price;
+                                    carrito.cantidad = 1;
+                                    carrito.subtotal = 1 * productFind.price;
                                     carrito.save((err, cartSave)=>{
                                         if(err){
                                              return res.status(500).send({message: 'Error general al guardar', err});
@@ -46,24 +45,23 @@ function shopping (req, res){
                                                  }else{
                                                      return res.status(404).send({message: 'No se pusheo el carro'});
                                                  }
-                                             }).populate('cartShopping')
+                                             }).populate('cartShopping').populate('wishList')
                                         }else{
                                              return res.status(404).send({message: 'Error con guardar el carro'});
                                         }
                                     })
                                 }else{
-                                    console.log(find.producto)
-                                    console.log('Ya existe este producto en tu carrito')
-                                    let update = find['producto']
-                                    console.log(update)
-                                    Cart.findByIdAndUpdate(find._id, update, {new: true}, (err, cartUpdate)=>{
+                                    let update = find.cantidad + 1;
+                                    Cart.findByIdAndUpdate(find._id, { $set: { cantidad: update}}, {new: true}, (err, cartUpdate)=>{
                                         if(err){
                                             return res.status(500).send({message: 'Error general al actualizar'});
                                         }else if(cartUpdate){
+                                            console.log(cartUpdate)
                                             User.findOne({_id: userId}, (err, userAct)=>{
                                                 if(err){
                                                     return res.status(500).send({message: 'Error general'});
                                                 }else if(userAct){
+                                                    
                                                     return res.send({message: 'Se actualizo el carrito', userAct});
                                                 }else{
                                                     return res.status(404).send({message: 'No se encontro el usuario'});
@@ -109,7 +107,7 @@ function removeItem(req, res){
         }else{
             return res.status(404).send({message: 'No se encontro el item'});
         }
-    }).populate('cart')
+    }).populate('cartShopping').populate('wishList')
 }
 
 function updateCantidad (req, res){
