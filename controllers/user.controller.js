@@ -12,11 +12,10 @@ var path = require('path');
 
 function initAdmin(req, res){
     let user = new User();
-    user.username = 'ADMIN'
     user.email = 'Admin@admin'
     user.password = 'admin123'
 
-    User.findOne({username: user.username}, (err, adminFind)=>{
+    User.findOne({email: user.email}, (err, adminFind)=>{
         if(err){
             return res.status(500).send({message: 'Error general durante la creación del usuario «Administrador»'});
         }else if(adminFind){

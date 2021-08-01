@@ -22,27 +22,62 @@ function shopping (req, res){
                     }else if(productFind.stock < params.cantidad){
                         return res.status(404).send({message: "No hay suficientes productos, seleccione menos"})
                     }else{
-                       carrito.idProducto = productFind.id;
-                       carrito.producto = productFind.name;
-                       carrito.cantidad = params.cantidad;
-                       carrito.subtotal = params.cantidad*productFind.price;
-                       carrito.save((err, cartSave)=>{
-                           if(err){
-                                return res.status(500).send({message: 'Error general al guardar', err});
-                           }else if(cartSave){
-                                User.findByIdAndUpdate(userId, {$push:{cartShopping: cartSave._id}}, {new: true}, (err, userPush)=>{
-                                    if(err){
-                                        return res.status(500).send({message: 'Error general4'});
-                                    }else if(userPush){
-                                        return res.send({message: 'Se pusheo correctamente', userPush});
-                                    }else{
-                                        return res.status(404).send({message: 'No se pusheo el carro'});
-                                    }
-                                }).populate('carts')
+                        Cart.find({idUsuario: userFind._id, idProducto: productFind._id }, (err, find)=>{
+                            if(err){
+                                return res.status(500).send({message: 'Error general', err});
+                           }else if(find){
+                               console.log(find)
+                                if(find == ''){
+                                    console.log('No esta este producto en tu carrito')
+                                    carrito.idUsuario = userFind.id;
+                                    carrito.idProducto = productFind.id;
+                                    carrito.producto = productFind.name;
+                                    carrito.cantidad = params.cantidad;
+                                    carrito.subtotal = params.cantidad * productFind.price;
+                                    carrito.save((err, cartSave)=>{
+                                        if(err){
+                                             return res.status(500).send({message: 'Error general al guardar', err});
+                                        }else if(cartSave){
+                                             User.findByIdAndUpdate(userId, {$push:{cartShopping: cartSave._id}}, {new: true}, (err, userPush)=>{
+                                                 if(err){
+                                                     return res.status(500).send({message: 'Error general4'});
+                                                 }else if(userPush){
+                                                     return res.send({message: 'Se pusheo correctamente', userPush});
+                                                 }else{
+                                                     return res.status(404).send({message: 'No se pusheo el carro'});
+                                                 }
+                                             }).populate('carts')
+                                        }else{
+                                             return res.status(404).send({message: 'Error con guardar el carro'});
+                                        }
+                                    })
+                                }else{
+                                    console.log(find.producto)
+                                    console.log('Ya existe este producto en tu carrito')
+                                    let update = find['producto']
+                                    console.log(update)
+                                    Cart.findByIdAndUpdate(find._id, update, {new: true}, (err, cartUpdate)=>{
+                                        if(err){
+                                            return res.status(500).send({message: 'Error general al actualizar'});
+                                        }else if(cartUpdate){
+                                            User.findOne({_id: userId}, (err, userAct)=>{
+                                                if(err){
+                                                    return res.status(500).send({message: 'Error general'});
+                                                }else if(userAct){
+                                                    return res.send({message: 'Se actualizo el carrito', userAct});
+                                                }else{
+                                                    return res.status(404).send({message: 'No se encontro el usuario'});
+                                                }
+                                            })
+                                        }else{
+                                            return res.status(404).send({message: 'No se encontro el carrito'});
+                                        }
+                                    })
+                                }
                            }else{
-                                return res.status(404).send({message: 'Error con guardar el carro'});
+                                return res.status(404).send({message: 'No se encontro'});
                            }
-                       })
+                        })
                     }
                 }else{
                     res.status(404).send({message: 'No hay producto'});
@@ -77,8 +112,47 @@ function removeItem(req, res){
     }).populate('cart')
 }
 
+function updateCantidad (req, res){
+    var userId = req.params.idU;
+    var cartId = req.params.idC;
+    var update = req.body;
 
+    if(update.producto || update.idProducto || update.subtotal){
+        return res.status(500).send({message: 'Sólo puedes actualizar la cantidad'});
+    }else{
+        if(update.cantidad <= 1){
+            return res.status(500).send({message: 'Ponga una cantidad mayor a 1'});
+        }else{
+            User.findOne({_id: userId, cartShopping: cartId}, (err, userCart)=>{
+                if(err){
+                    return res.status(500).send({message: 'Error general'});
+                }else if(userCart){
+                    Cart.findByIdAndUpdate(cartId, update, {new: true}, (err, cartUpdate)=>{
+                        if(err){
+                            return res.status(500).send({message: 'Error general al actualizar'});
+                        }else if(cartUpdate){
+                            User.findOne({_id: userId, cartShopping: cartId}, (err, userAct)=>{
+                                if(err){
+                                    return res.status(500).send({message: 'Error general'});
+                                }else if(userAct){
+                                    return res.send({message: 'Se actualizo el carrito', userAct});
+                                }else{
+                                    return res.status(404).send({message: 'No se encontro el usuario'});
+                                }
+                            }).populate('cartShopping')
+                        }else{
+                            return res.status(404).send({message: 'No se encontro el carrito'});
+                        }
+                    })
+                }else{
+                    return res.status(404).send({message: 'No se encontro el usuario o el carro'});
+                }
+            })
+        }
+    }
+}
 module.exports = {
     shopping,
-    removeItem
+    removeItem,
+    updateCantidad
 }
