@@ -3,57 +3,6 @@
 var User = require('../models/user.model');
 var Product = require('../models/product.model');
 
-/*function addWish (req, res){  //NO LE HAGAN CASO, ME BUGIE CUANDO LO HICE
-    var userId = req.params.idU;
-    var productId = req.params.idP;
-    var params = req.body;
-    var wishl = new Wish();
-
-    User.findById(userId, (err, userFind)=>{
-        if(err){
-            return res.status(500).send({message: 'Error general en la busqueda de usuario'});
-        }else if(userFind){
-            Product.findById(productId, (err, productFind)=>{
-                if(err){
-                    return res.status(500).send({message: 'Error general en la busqueda del producto'});
-                }else if(productFind){
-                    wishl.producto = productFind;
-                    wishl.save((err, wishSave)=>{
-                        if(err){
-                            return res.status(500).send({message: 'Error general al salvar'});
-                        }else if(wishSave){
-                            console.log(wishSave)
-                            User.findByIdAndUpdate(userId, {$push: {wishList: wishSave._id}}, {new: true}, (err, userFind2)=>{
-                                if(err){
-                                    return res.status(500).send({message: 'Error general con el push'});
-                                }else if(userFind2){
-                                    return res.send({message: 'Se actualizo el user con la wish', userFind});
-                                }else{
-                                    return res.status(404).send({message: 'Error general 5, creo'});
-                                }
-                            }).populate([
-                                {
-                                  path: "wishList",
-                                  model: "wish",
-                                  populate:{
-                                    path: 'productos',
-                                    model: 'product'
-                                  }
-                                },
-                              ])
-                        }else{
-                            return res.status(500).send({message: 'idk'});
-                        }
-                    })
-                }else{
-                    return res.status(500).send({message: 'Maybe no hay product'});
-                }
-            })
-        }else{
-            return res.status(404).send({message: 'Maybe no existe user'});
-        }
-    })
-} */
 
 function wishSet (req, res){
     var userId = req.params.idU;
@@ -66,15 +15,29 @@ function wishSet (req, res){
                 if(err){
                     return res.status(500).send({message: 'Error general en la busqueda del producto'});
                 }else if(productFind){
-                    User.findByIdAndUpdate(userId, {$push: {wishList: productFind._id}}, {new: true}, (err, userFind2)=>{
+                    User.find({_id: userId, wishList: productFind._id}, (err, find)=>{
                         if(err){
-                            return res.status(500).send({message: 'Error general con el push'});
-                        }else if(userFind2){
-                            return res.send({message: 'Se actualizo el user con la wish', userFind2});
+                             return res.status(500).send({message: 'Error general', err});
+                        }else if(find){
+                             if(find == ''){
+                                 console.log('No esta este producto en tu wish')
+                                 User.findByIdAndUpdate(userId, {$push: {wishList: productFind._id}}, {new: true}, (err, userFind2)=>{
+                                     if(err){
+                                         return res.status(500).send({message: 'Error general con el push'});
+                                     }else if(userFind2){
+                                         return res.send({message: 'Se actualizo el user con la wish', userFind2});
+                                     }else{
+                                         return res.status(404).send({message: 'Error general 5, creo'});
+                                     }
+                                 }).populate('wishList')
+                             }else{
+                                console.log('Ya existe este producto en tu wish')
+                                return res.status(500).send({message: 'Ya existe este producto en tu wish'});
+                             }
                         }else{
-                            return res.status(404).send({message: 'Error general 5, creo'});
+                             return res.status(404).send({message: 'No se encontro'});
                         }
-                    }).populate('wishList')
+                    })
                 }else{
                     return res.status(500).send({message: 'Maybe no hay product'});
                 }
