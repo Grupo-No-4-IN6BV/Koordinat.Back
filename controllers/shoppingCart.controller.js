@@ -22,7 +22,7 @@ function shopping (req, res){
                     }else if(productFind.stock < params.cantidad){
                         return res.status(404).send({message: "No hay suficientes productos, seleccione menos"})
                     }else{
-                        Cart.find({idUsuario: userFind._id, idProducto: productFind._id }, (err, find)=>{
+                        Cart.findOne({idUsuario: userFind._id, idProducto: productFind._id }, (err, find)=>{
                             if(err){
                                 return res.status(500).send({message: 'Error general', err});
                            }else if(find){
@@ -46,7 +46,7 @@ function shopping (req, res){
                                                  }else{
                                                      return res.status(404).send({message: 'No se pusheo el carro'});
                                                  }
-                                             }).populate('carts')
+                                             }).populate('cartShopping')
                                         }else{
                                              return res.status(404).send({message: 'Error con guardar el carro'});
                                         }

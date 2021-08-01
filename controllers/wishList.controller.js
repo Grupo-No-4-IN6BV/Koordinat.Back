@@ -31,7 +31,7 @@ function wishSet (req, res){
                                      }
                                  }).populate('wishList')
                              }else{
-                                console.log('Ya existe este producto en tu wish')
+                                console.log('Ya existe este producto en tu wish', find)
                                 return res.status(500).send({message: 'Ya existe este producto en tu wish'});
                              }
                         }else{
