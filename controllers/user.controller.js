@@ -240,7 +240,7 @@ function removeUser(req, res){
                                 if(err){
                                     return res.status(500).send({message: 'Error al verificar contraseña'})
                                 }else if(userFind){
-                                    return  res.send({message: 'El Usuario se elimino correctamente', userRemoved:userFind});
+                                    return  res.send({message: 'El Usuario se elimino correctamente', userFind});
                                 }else{
                                     return res.send({message: 'Usuario no encontrado o ya eliminado'})
                                 }

@@ -22,58 +22,84 @@ function shopping (req, res){
                     }else if(productFind.stock < params.cantidad){
                         return res.status(404).send({message: "No hay suficientes productos, seleccione menos"})
                     }else{
-                        Cart.findOne({idUsuario: userFind._id, idProducto: productFind._id }, (err, find)=>{
+                        Cart.findOne({idUsuario: userFind._id, idProducto: productFind._id, condition : true}, (err, find)=>{
                             if(err){
                                 return res.status(500).send({message: 'Error general', err});
                            }else if(find){
-                                if(find == ''){
-                                    console.log('No esta este producto en tu carrito')
-                                    carrito.idUsuario = userFind.id;
-                                    carrito.idProducto = productFind.id;
-                                    carrito.producto = productFind.name;
-                                    carrito.cantidad = 1;
-                                    carrito.subtotal = 1 * productFind.price;
-                                    carrito.save((err, cartSave)=>{
-                                        if(err){
-                                             return res.status(500).send({message: 'Error general al guardar', err});
-                                        }else if(cartSave){
-                                             User.findByIdAndUpdate(userId, {$push:{cartShopping: cartSave._id}}, {new: true}, (err, userPush)=>{
-                                                 if(err){
-                                                     return res.status(500).send({message: 'Error general4'});
-                                                 }else if(userPush){
-                                                     return res.send({message: 'Se pusheo correctamente', userPush});
-                                                 }else{
-                                                     return res.status(404).send({message: 'No se pusheo el carro'});
-                                                 }
-                                             }).populate('cartShopping').populate('wishList')
-                                        }else{
-                                             return res.status(404).send({message: 'Error con guardar el carro'});
-                                        }
-                                    })
-                                }else{
-                                    let update = find.cantidad + 1;
-                                    Cart.findByIdAndUpdate(find._id, { $set: { cantidad: update}}, {new: true}, (err, cartUpdate)=>{
-                                        if(err){
-                                            return res.status(500).send({message: 'Error general al actualizar'});
-                                        }else if(cartUpdate){
-                                            console.log(cartUpdate)
-                                            User.findOne({_id: userId}, (err, userAct)=>{
-                                                if(err){
-                                                    return res.status(500).send({message: 'Error general'});
-                                                }else if(userAct){
-                                                    
-                                                    return res.send({message: 'Se actualizo el carrito', userAct});
-                                                }else{
-                                                    return res.status(404).send({message: 'No se encontro el usuario'});
-                                                }
-                                            })
-                                        }else{
-                                            return res.status(404).send({message: 'No se encontro el carrito'});
-                                        }
-                                    })
-                                }
+                               if(find.condition ==  true){
+                                let update = find.cantidad + 1;
+                                Cart.findByIdAndUpdate(find._id, { $set: { cantidad: update}}, {new: true}, (err, cartUpdate)=>{
+                                    if(err){
+                                        return res.status(500).send({message: 'Error general al actualizar'});
+                                    }else if(cartUpdate){
+                                        User.findOne({_id: userId}, (err, userAct)=>{
+                                            if(err){
+                                                return res.status(500).send({message: 'Error general'});
+                                            }else if(userAct){
+                                                
+                                                return res.send({message: 'Se actualizo el carrito', userAct});
+                                            }else{
+                                                return res.status(404).send({message: 'No se encontro el usuario'});
+                                            }
+                                        }).populate('cartShopping').populate('wishList')
+                                    }else{
+                                        return res.status(404).send({message: 'No se encontro el carrito'});
+                                    }
+                                })
+                               }else{
+                                carrito.idUsuario = userFind.id;
+                                carrito.idProducto = productFind.id;
+                                carrito.image = productFind.img1;
+                                carrito.producto = productFind.name;
+                                carrito.cantidad = 1;
+                                carrito.subtotal = 1 * productFind.price;
+                                carrito.condition = true;
+                                carrito.idBusinnes = productFind.business;
+                                carrito.save((err, cartSave)=>{
+                                    if(err){
+                                         return res.status(500).send({message: 'Error general al guardar', err});
+                                    }else if(cartSave){
+                                         User.findByIdAndUpdate(userId, {$push:{cartShopping: cartSave._id}}, {new: true}, (err, userPush)=>{
+                                             if(err){
+                                                 return res.status(500).send({message: 'Error general4'});
+                                             }else if(userPush){
+                                                 return res.send({message: 'Se pusheo correctamente', userPush});
+                                             }else{
+                                                 return res.status(404).send({message: 'No se pusheo el carro'});
+                                             }
+                                         }).populate('cartShopping').populate('wishList')
+                                    }else{
+                                         return res.status(404).send({message: 'Error con guardar el carro'});
+                                    }
+                                })
+                               }
                            }else{
-                                return res.status(404).send({message: 'No se encontro'});
+                               
+                            carrito.idUsuario = userFind.id;
+                            carrito.idProducto = productFind.id;
+                            carrito.producto = productFind.name;
+                            carrito.image = productFind.img1;
+                            carrito.cantidad = 1;
+                            carrito.subtotal = 1 * productFind.price;
+                            carrito.condition = true;
+                            carrito.idBusinnes = productFind.business;
+                            carrito.save((err, cartSave)=>{
+                                if(err){
+                                     return res.status(500).send({message: 'Error general al guardar', err});
+                                }else if(cartSave){
+                                     User.findByIdAndUpdate(userId, {$push:{cartShopping: cartSave._id}}, {new: true}, (err, userPush)=>{
+                                         if(err){
+                                             return res.status(500).send({message: 'Error general4'});
+                                         }else if(userPush){
+                                             return res.send({message: 'Se pusheo correctamente', userPush});
+                                         }else{
+                                             return res.status(404).send({message: 'No se pusheo el carro'});
+                                         }
+                                     }).populate('cartShopping').populate('wishList')
+                                }else{
+                                     return res.status(404).send({message: 'Error con guardar el carro'});
+                                }
+                            })
                            }
                         })
                     }

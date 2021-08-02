@@ -3,6 +3,7 @@
 var Business = require('../models/business.model');
 var bcrypt = require('bcrypt-nodejs');
 var jwt = require('../services/jwt');
+var Cart = require('../models/shoppingCart.model');
 
 function saveBusiness(req, res){
 
@@ -200,6 +201,20 @@ function registerBusiness (req, res){
     }
 }
 
+function getNotification(req, res){
+    let businessId = req.params.idB;
+    
+    Cart.countDocuments({idBusinnes: businessId, }).exec((err, numberNot)=>{
+        if(err){
+            return res.status(500).send({message: 'Error general'})
+        }else if(numberNot){
+           return res.send({meesage: 'noticaciones', numberNot})
+        }else{
+            return res.status(404).send({message: 'Error general'})
+        }
+    })
+}
+
 
 module.exports = {
     saveBusiness,
@@ -208,5 +223,6 @@ module.exports = {
     searchBusiness,
     updateBusiness,
     removeBusiness,
-    registerBusiness 
+    registerBusiness,
+    getNotification
 }

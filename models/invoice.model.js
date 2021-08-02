@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 var invoiceSchema = Schema({
     nameUser: String,
     date: String,
-    details: []
+    details: [{type: Schema.ObjectId, ref: "cart"}]
 })
 
 module.exports = mongoose.model('invoice', invoiceSchema);

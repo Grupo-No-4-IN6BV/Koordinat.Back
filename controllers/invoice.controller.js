@@ -14,16 +14,17 @@ function CheckIn (req, res){
         if(err){
             res.status(500).send({message: 'Error general'});
         }else if(userFind){   
-            Cart.findById(cartId, (err, cartFind)=>{
+            User.findById(userId, (err, nall)=>{
                 if(err){
                     return res.status(500).send({message: 'Error general 2'});
-                }else if(cartFind){
+                }else if(nall){
                     invoice.nameUser = userFind.name + ', ' + userFind.lastname;
                     var fecha = today.getDate() + '-' + (today.getMonth()+1) + '-' + today.getFullYear();
                     var hora = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
                     var FechayHora = fecha + ' at ' + hora;
                     invoice.date = FechayHora;
                     invoice.details = userFind.cartShopping.slice();
+
         
                     invoice.save((err, invoiceSave)=>{
                         if(err){
@@ -33,12 +34,20 @@ function CheckIn (req, res){
                                 if(err){
                                     return res.status(500).send({message: 'Error general'});
                                 }else if(invoicePush){
-                                    let cartEmpty = null;
+                                    let cartEmpty = [];
                                     User.findByIdAndUpdate(userId, {$set: {cartShopping: cartEmpty}}, {new:true}, (err, userUpdated)=>{
                                         if(err){
                                             return res.status(500).send({message: 'Error general al limpiar carro'});
                                         }else if(userUpdated){
-                                            return res.send({message: 'Factura almacenada', userUpdated, invoicePush});
+                                            Cart.updateMany({idUsuario: userFind._id}, {condition: false, lat: userFind.lat ,lng:userFind.lng}, (err, updateCart)=>{
+                                                if(err){
+                                                    return res.status(500).send({message: 'Error general'});
+                                                }else if(updateCart){
+                                                    return res.send({message: 'Factura almacenada', userUpdated, invoicePush, updateCart});
+                                                }else{
+                                                    res.status(404).send({message: 'No hay registro del usuario1'}); 
+                                                }
+                                            })
                                         }else{
                                             res.status(404).send({message: 'No hay registro del usuario1'}); 
                                         }

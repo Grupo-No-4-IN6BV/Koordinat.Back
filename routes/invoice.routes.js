@@ -6,7 +6,7 @@ var mdAuth = require('../middlewares/auth');
 
 var api = express.Router();
 
-api.post('/:idU/checkIn/:idC', mdAuth.ensureAuth, invoiceController.CheckIn);
+api.post('/:idU/checkIn', mdAuth.ensureAuth, invoiceController.CheckIn);
 api.get('/getInvoices/:idU', mdAuth.ensureAuth, invoiceController.getInvoices);
 api.get('/getInvoice/:id', mdAuth.ensureAuth, invoiceController.getInvoice);
 
