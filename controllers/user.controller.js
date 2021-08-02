@@ -12,7 +12,7 @@ var path = require('path');
 
 function initAdmin(req, res){
     let user = new User();
-    user.email = 'Admin@admin'
+    user.email = 'Admin@admin' 
     user.password = 'admin123'
 
     User.findOne({email: user.email}, (err, adminFind)=>{
@@ -166,9 +166,6 @@ function updateUser(req, res){
     let userId = req.params.id;
     let update = req.body;
 
-    if(userId != req.user.sub){
-        return res.status(401).send({ message: 'No posees permisos necesarios para realizar esta acción'});
-    }else{
         if(update.password || update.role){
             return res.status(401).send({ message: 'No se puede actualizar la contraseña ni el rol desde esta función'});
         }else{
@@ -214,17 +211,11 @@ function updateUser(req, res){
                 }).populate('categories')
             }
         }
-    }
-    
 }
 
 function removeUser(req, res){
     let userId = req.params.id;
     let params = req.body;
-
-    if(userId != req.user.sub){
-        return res.send({message: 'No posees permisos necesarios para realizar esta acción'})
-    }else{
         if(!params.password){
             return res.status(401).send({message: 'Por favor ingresa la contraseña para poder eliminar tu cuenta'});
         }else{
@@ -254,7 +245,6 @@ function removeUser(req, res){
                 }
             })
         }
-    }
 }
 
 function registerUser(req, res){

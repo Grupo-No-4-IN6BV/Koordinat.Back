@@ -3,6 +3,7 @@
 var Product = require('../models/product.model');
 var Category = require('../models/category.model');
 var Business = require('../models/business.model');
+var Cart = require('../models/shoppingCart.model');
 
 function saveProduct(req, res){
     
@@ -152,29 +153,24 @@ function updateProduct(req, res){
     let productId = req.params.id;
     let update = req.body;
 
-
-    if(update.stock || update.solds){
-        return res.status(404).send({message: 'No puedes actualizar los paramatros de stock y solds'})
-    }else{
-        if(update.name || update.price || update.category){
             if(update.category){
-                Category.findOne({name: update.category}, (err, categoryFind)=>{
+                Category.findOne({_id: update.category}, (err, categoryFind)=>{
                     if(err){
-                        return res.status(500).send({message: 'Error en el servidor'});
+                        return res.status(500).send({message: 'Error en el servidor1'});
                     }else if(categoryFind){
-                        update.category = categoryFind.id;
+                        update.category = categoryFind._id;
     
                         Product.findOne({name: update.name}, (err, productFind)=>{
                             if(err){
-                                return res.status(500).send({message: 'Error en el servidor'})
+                                return res.status(500).send({message: 'Error en el servidor2'})
                             }else if(productFind){
-                                return res.status(200).send({message: 'Producto ya existente'})
+                                return res.send({message: 'Producto ya existente'})
                             }else{
-                                Product.findByIdAndUpdate(productId, update, {new: true}, (err, productUpdate)=>{
+                                Product.findByIdAndUpdate({_id: update._id}, update, {new: true}, (err, productUpdate)=>{
                                     if(err){
-                                        return res.status(500).send({message: 'Error general'});
+                                        return res.status(500).send({message: 'Error general3'});
                                     }else if(productUpdate){
-                                        return res.send({message: 'Producto actualizado', productUpdate}).populate('product');
+                                        return res.send({message: 'Producto actualizado', productUpdate});
                                     }else{
                                         return res.status(404).send({message: 'No hay registro de producto para actualizar'}); 
                                     }
@@ -188,13 +184,15 @@ function updateProduct(req, res){
             }else{
                 Product.findOne({name: update.name}, (err, productFind)=>{
                     if(err){
-                        res.status(500).send({message: 'Error en el servidor'})
+                        res.status(500).send({message: 'Error en el servidor4'})
                     }else if(productFind){
                         res.status(200).send({message: 'Producto ya existente'})
                     }else{
                         Product.findByIdAndUpdate(productId, update, {new: true}, (err, productUpdate)=>{
                             if(err){
-                                return res.status(500).send({message: 'Error general'});
+                                console.log(err)
+                                return res.status(500).send({message: 'Error general5', err});
+                                
                             }else if(productUpdate){
                                 return res.send({message: 'Producto actualizado', productUpdate}.populate('product'));
                             }else{
@@ -204,11 +202,7 @@ function updateProduct(req, res){
                     }
                 })
             } 
-          
-        }else{
-        return res.status(404).send({message: 'Ingresar algún campo para actualizar'});
-        }
-    }
+    
 }
 
 
@@ -321,7 +315,21 @@ function searchProduct(req, res){
     }
 }
 
+function orders(req, res){
+    let idBussines = req.params.idB;
+    Cart.find({idBusinnes: idBussines, condition: false}, (err, orders)=>{
+        if(err){
+            return res.status(500).send({message: 'Error general'});
+        }else if(orders){
+            return res.send({message: 'pedidos encontrados', orders})
+        }else{
+            return res.send({message: 'no se encontraron los datos'})
+        }
+    })
+}
+
 module.exports = {
+    orders,
     saveProduct,
     updateProduct,
     removeProduct,
@@ -330,5 +338,6 @@ module.exports = {
     spentProducts,
     controlStock,
     searchProduct,
-    getProduct
+    getProduct,
+    
 }

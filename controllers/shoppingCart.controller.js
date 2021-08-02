@@ -125,7 +125,15 @@ function removeItem(req, res){
                 if(err){
                     return res.status(500).send({message: 'Error general con el remove', err});
                 }else if(itemRemove){
-                    return res.send({message: 'Item eliminado', itemPull});
+                    User.findById(userId, (err, itemact)=>{
+                        if(err){
+                            return res.status(500).send({message: 'Error general'});
+                        }else if(itemact){
+                            return res.send({message: 'Item eliminado', itemact});
+                        }else{
+                            return res.status(404).send({message: 'No se encontro el user'});
+                        }
+                    }).populate('cartShopping').populate('wishList')
                 }else{
                     return res.status(404).send({message: 'No se encontro el user'});
                 }
@@ -133,7 +141,7 @@ function removeItem(req, res){
         }else{
             return res.status(404).send({message: 'No se encontro el item'});
         }
-    }).populate('cartShopping').populate('wishList')
+    })
 }
 
 function updateCantidad (req, res){

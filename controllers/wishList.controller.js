@@ -60,7 +60,7 @@ function removeWish (req, res){
         }else{  
             return res.status(404).send({message: 'No se encontro el produc en la wish en el user'});
         }
-    }).populate('wishList')
+    }).populate('cartShopping').populate('wishList')
 }
 
 module.exports = {
