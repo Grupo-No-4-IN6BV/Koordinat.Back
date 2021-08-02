@@ -5,10 +5,10 @@ var api = express.Router();
 var mdAuth = require('../middlewares/auth');
 var categoryController = require('../controllers/category.controller');
 
-api.put('/saveCategory', categoryController.saveCategory);
+api.put('/saveCategory', [mdAuth.ensureAuth, mdAuth.ensureAuthAdmin] ,categoryController.saveCategory);
 api.post('/searchCategory', categoryController.searchCategory);
-api.put('/:idU/updateCategory/:idC', categoryController.updateCategory);
-api.put('/:idU/removeCategory/:idC', categoryController.removeCategory);
+api.put('/updateCategory/:idC', [mdAuth.ensureAuth, mdAuth.ensureAuthAdmin] ,categoryController.updateCategory);
+api.put('/removeCategory/:idC', [mdAuth.ensureAuth, mdAuth.ensureAuthAdmin] ,categoryController.removeCategory);
 api.get('/getCategories', categoryController.getCategories)
 
 

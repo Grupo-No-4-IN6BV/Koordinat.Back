@@ -4,6 +4,7 @@ var Business = require('../models/business.model');
 var bcrypt = require('bcrypt-nodejs');
 var jwt = require('../services/jwt');
 var Cart = require('../models/shoppingCart.model');
+var Product = require('../models/product.model');
 
 function saveBusiness(req, res){
 
@@ -97,37 +98,63 @@ function searchBusiness(req, res){
 
 
 function updateBusiness(req, res){
-    let userId = req.params.idU;
     let businessId = req.params.idB;
     let update = req.body;
+    
+    Business.findByIdAndUpdate(businessId, update, {new: true}, (err, updateBusiness)=>{
+        if(err){
+            return res.status(500).send({message: 'Error general al actualizar la empresa'});
+        }else if(updateBusiness){
+            return res.send({message: 'Empresa actualizada exitosamente', updateBusiness});
+        }else{
+            return res.status(401).send({message: 'No se pudo actualizar la empresa'});
+        }
+    })
+   
+}
 
-    if(update.name){
-        User.findOne({_id: userId, business: businessId}, (err, userBusiness)=>{
-            if(err){
-                return res.status(500).send({message: 'Error general al actualizar'});
-            }else if(userBusiness){
-                Business.findByIdAndUpdate(businessId, update, {new: true}, (err, updateBusiness)=>{
-                    if(err){
-                        return res.status(500).send({message: 'Error general al actualizar la empresa'});
-                    }else if(updateBusiness){
-                    User.findOne({_id: userId, business: leagueId}, (err, userBusinessAct)=>{
+
+function removeBuss(req, res){
+    let userId = req.params.id;
+    let params = req.body;
+        if(!params.password){
+            return res.status(401).send({message: 'Por favor ingresa la contraseña para poder eliminar tu cuenta'});
+        }else{
+            Business.findById(userId, (err, businessFind)=>{
+                if(err){
+                    return res.status(500).send({message: 'Error general'})
+                }else if(businessFind){
+                    bcrypt.compare(params.password, businessFind.password, (err, checkPassword)=>{
                         if(err){
-                            return res.status(500).send({message: 'Error general al actualizar la empresa 2'});
-                        }else if(userBusinessAct){
-                            return res.send({message: 'Empresa actualizada exitosamente', userBusinessAct});
+                            return res.send({message: 'Error general al verificar contraseña'})
+                        }else if(checkPassword){
+                            Business.findByIdAndRemove(userId, (err, businessElimined)=>{
+                                if(err){
+                                    return res.status(500).send({message: 'Error al verificar contraseña'})
+                                }else if(businessElimined){
+                                    Product.deleteMany({business: userId}, (err, eliminedProd)=>{
+                                        if(err){
+                                            return res.status(500).send({message: 'Error general'})
+                                        }else if(eliminedProd){
+                                            return  res.send({message: 'El Usuario se elimino correctamente', businessElimined});
+                                        }else{
+                                            return res.send({message: 'no se eliminaron los productos'})
+                                        }
+                                    })
+                                    
+                                }else{
+                                    return res.send({message: 'Usuario no encontrado o ya eliminado'})
+                                }
+                            })
+                        }else{
+                            return res.status(403).send({message: 'Contraseña incorrecta'})
                         }
                     })
-                    }else{
-                        return res.status(401).send({message: 'No se pudo actualizar la empresa'});
-                    }
-                })
-            }else{
-                return res.status(404).send({message: 'La empresa no existe o ya ha sido actualizada'});
-            }
-        }).populate('products')
-    }else{
-        return res.status(404).send({message: 'Por favor ingresa los datos mínimos para poder actualizar la empresa'});
-    }       
+                }else{
+                    return res.send({message: 'Usuario inexistente o ya eliminado'})
+                }
+            })
+        }
 }
 
 
@@ -152,7 +179,7 @@ function removeBusiness(req, res){
                 }else{
                     return res.status(404).send({message: 'No se puede eliminar por falta de datos'})
                 }
-            }).populate('leagues')
+            })
    
 }
 
@@ -224,5 +251,6 @@ module.exports = {
     updateBusiness,
     removeBusiness,
     registerBusiness,
-    getNotification
+    getNotification,
+    removeBuss
 }

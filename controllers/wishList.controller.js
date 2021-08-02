@@ -20,7 +20,6 @@ function wishSet (req, res){
                              return res.status(500).send({message: 'Error general', err});
                         }else if(find){
                              if(find == ''){
-                                 console.log('No esta este producto en tu wish')
                                  User.findByIdAndUpdate(userId, {$push: {wishList: productFind._id}}, {new: true}, (err, userFind2)=>{
                                      if(err){
                                          return res.status(500).send({message: 'Error general con el push'});

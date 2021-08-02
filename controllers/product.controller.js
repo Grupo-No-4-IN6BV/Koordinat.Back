@@ -75,7 +75,6 @@ function saveProduct(req, res){
                                         })
                                     }
                                 }else{
-                                    console.log(params)
                                     return res.send({message: 'No se encontro categoria'})
                                 }
                             }).populate('business');
@@ -87,7 +86,6 @@ function saveProduct(req, res){
                                     return res.status(500).send({message: 'Error general'})
                                 }else if(categoryFind){
                                     if(params.stock){
-        
                                         product.name = params.name;
                                         product.price = params.price;
                                         product.stock = params.stock;
@@ -99,7 +97,6 @@ function saveProduct(req, res){
                                         product.img3 = params.img3
                                         product.img4 = params.img4
                                         product.img5 = params.img5    
-        
                                         product.save((err, productSaved)=>{
                                             if(err){
                                                 return res.status(500).send({message: 'Error general'})
@@ -152,20 +149,12 @@ function saveProduct(req, res){
 function updateProduct(req, res){
     let productId = req.params.id;
     let update = req.body;
-
             if(update.category){
                 Category.findOne({_id: update.category}, (err, categoryFind)=>{
                     if(err){
                         return res.status(500).send({message: 'Error en el servidor1'});
                     }else if(categoryFind){
                         update.category = categoryFind._id;
-    
-                        Product.findOne({name: update.name}, (err, productFind)=>{
-                            if(err){
-                                return res.status(500).send({message: 'Error en el servidor2'})
-                            }else if(productFind){
-                                return res.send({message: 'Producto ya existente'})
-                            }else{
                                 Product.findByIdAndUpdate({_id: update._id}, update, {new: true}, (err, productUpdate)=>{
                                     if(err){
                                         return res.status(500).send({message: 'Error general3'});
@@ -175,8 +164,6 @@ function updateProduct(req, res){
                                         return res.status(404).send({message: 'No hay registro de producto para actualizar'}); 
                                     }
                                 }).populate('category')
-                            }
-                        })
                     }else{
                         return res.status(404).send({message: 'No se encontro categoria'})
                     }
@@ -328,6 +315,38 @@ function orders(req, res){
     })
 }
 
+function delOrder(req, res){
+    var params = req.body;
+    var stockNew;
+
+    Product.findById(params.idProducto, (err, product)=>{
+        if(err){
+            return res.status(500).send({message: 'Error general'});
+        }else if(product){
+            stockNew = product.stock - params.cantidad;
+            Product.findByIdAndUpdate(product._id, {stock: stockNew}, {new:true}, (err, productUpdate)=>{
+                if(err){
+                    return res.status(500).send({message: 'Error general al actualizar'});
+                }else if(productUpdate){
+                    Cart.findByIdAndDelete(params._id, (err, cartDel)=>{
+                        if(err){
+                            return res.status(500).send({message: 'Error general'}); 
+                        }else if(cartDel){
+                            return res.send({message: 'Pedido Completado', productUpdate});
+                        }else{
+                            return res.send({message: 'no se encontro el pedido'})
+                        }
+                    })
+                }else{
+                    return res.status(401).send({message: 'No se actualizó el stock'});
+                } 
+            })
+        }else{
+            return res.send({message: 'no se encontro el producto'})
+        }
+    })
+}
+
 module.exports = {
     orders,
     saveProduct,
@@ -339,5 +358,6 @@ module.exports = {
     controlStock,
     searchProduct,
     getProduct,
+    delOrder
     
 }

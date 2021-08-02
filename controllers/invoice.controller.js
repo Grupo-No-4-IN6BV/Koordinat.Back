@@ -43,7 +43,16 @@ function CheckIn (req, res){
                                                 if(err){
                                                     return res.status(500).send({message: 'Error general'});
                                                 }else if(updateCart){
-                                                    return res.send({message: 'Factura almacenada', userUpdated, invoicePush, updateCart});
+                                                    User.findById(userId, (err, userupd)=>{
+                                                        if(err){
+                                                            return res.status(500).send({message: 'Error general'});
+                                                        }else if(userupd){
+                                                            return res.send({message: 'Pedido Enviado', userupd});
+                                                        }else{
+                                                            res.send({message: 'no se encontro el usuario'}); 
+                                                        }
+                                                    }).populate('cartShopping').populate('wishList')
+                                                    
                                                 }else{
                                                     res.status(404).send({message: 'No hay registro del usuario1'}); 
                                                 }

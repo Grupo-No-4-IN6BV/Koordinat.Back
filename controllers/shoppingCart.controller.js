@@ -18,7 +18,7 @@ function shopping (req, res){
                     res.status(500).send({message: 'Error general2'});
                 }else if(productFind){
                     if(productFind.stock == 0){
-                        return res.status(404).send({message: "No hay productos en existencia"})
+                        return res.send({message: "No hay productos en existencia"})
                     }else if(productFind.stock < params.cantidad){
                         return res.status(404).send({message: "No hay suficientes productos, seleccione menos"})
                     }else{
